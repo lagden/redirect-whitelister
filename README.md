@@ -1,5 +1,16 @@
 # whitelister
 
+[![NPM version][npm-img]][npm]
+[![Build Status][ci-img]][ci]
+[![Coverage Status][coveralls-img]][coveralls]
+
+[npm-img]:       https://img.shields.io/npm/v/@tadashi/whitelister.svg
+[npm]:           https://www.npmjs.com/package/@tadashi/whitelister
+[ci-img]:          https://github.com/lagden/redirect-whitelister/actions/workflows/nodejs.yml/badge.svg
+[ci]:              https://github.com/lagden/redirect-whitelister/actions/workflows/nodejs.yml
+[coveralls-img]:   https://coveralls.io/repos/github/lagden/redirect-whitelister/badge.svg?branch=master
+[coveralls]:       https://coveralls.io/github/lagden/redirect-whitelister?branch=master
+
 
 ```shell
 npm install -S @tadashi/whitelister
@@ -35,4 +46,3 @@ whitelister.allowedProtocols = ['gopher:', 'http:', 'https:']
 #### Validating a url
 
 - `verify(<url>)` - Returns a boolean if the url contains a domain that matches any of the allowed domains.
-  
