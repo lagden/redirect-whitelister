@@ -1,64 +1,63 @@
-const tap = require('tap');
-const Whitelister = require('../');
+/* eslint no-new: 0 */
 
-tap.test('invalid options', (t) => {
-  t.throws(() => { new Whitelister(); }, new TypeError('allowed must be an array or string'));
-  t.throws(() => { new Whitelister(() => {}); }, new TypeError('allowed must be an array or string'));
-  t.end();
-});
+import test from 'ava'
+import Whitelister from '../src/whitelister.js'
 
-tap.test('allows multiple domains', (t) => {
-  const validator = new Whitelister([
-    'example.com',
-    'test.example.com'
-  ]);
-  t.equal(validator.verify('https://example.com/query'), true);
-  t.equal(validator.verify('https://test.example.com/account'), true);
-  t.equal(validator.verify('http://google.com/search'), false);
-  t.end();
-});
+test('invalid options', t => {
+	t.throws(() => {
+		new Whitelister()
+	}, {instanceOf: TypeError, message: 'allowed must be an array or string'})
+	t.throws(() => {
+		new Whitelister(() => {})
+	}, {instanceOf: TypeError, message: 'allowed must be an array or string'})
+})
 
-tap.test('allows single domain', (t) => {
-  const validator = new Whitelister('example.com');
-  t.equal(validator.verify('https://example.com/query'), true);
-  t.equal(validator.verify('http://google.com/search'), false);
-  t.end();
-});
+test('allows multiple domains', t => {
+	const validator = new Whitelister([
+		'example.com',
+		'test.example.com',
+	])
+	t.true(validator.verify('https://example.com/query'))
+	t.true(validator.verify('https://test.example.com/account'))
+	t.false(validator.verify('http://google.com/search'))
+})
 
-tap.test('allows wildcard domains', (t) => {
-  const validator = new Whitelister([
-    '*.example.com',
-    'test.*.example2.com'
-  ]);
-  t.equal(validator.verify('https://example.com/query'), false);
-  t.equal(validator.verify('https://metrics.example.com/query'), true);
-  t.equal(validator.verify('https://test.example2.com/account'), false);
-  t.equal(validator.verify('https://test.auth.example.com/account'), true);
-  t.end();
-});
+test('allows single domain', t => {
+	const validator = new Whitelister('example.com')
+	t.true(validator.verify('https://example.com/query'))
+	t.false(validator.verify('http://google.com/search'))
+})
 
-tap.test('allows regex domains', (t) => {
-  const validator = new Whitelister([
-    '[a-n]+.com',
-  ]);
-  t.equal(validator.verify('https://example.com/query'), false);
-  t.equal(validator.verify('https://acen.com/query'), true);
-  t.equal(validator.verify('https://acenz.com/query'), false);
-  t.end();
-});
+test('allows wildcard domains', t => {
+	const validator = new Whitelister([
+		'*.example.com',
+		'test.*.example2.com',
+	])
+	t.false(validator.verify('https://example.com/query'))
+	t.true(validator.verify('https://metrics.example.com/query'))
+	t.false(validator.verify('https://test.example2.com/account'))
+	t.true(validator.verify('https://test.auth.example.com/account'))
+})
 
-tap.test('Checks protocol', (t) => {
-  const validator = new Whitelister('example.com');
-  t.equal(validator.verify('https://example.com/query'), true);
-  t.equal(validator.verify('gopher://example.com/query'), false);
-  t.end();
-});
+test('allows regex domains', t => {
+	const validator = new Whitelister([
+		'[a-n]+.com',
+	])
+	t.false(validator.verify('https://example.com/query'))
+	t.true(validator.verify('https://acen.com/query'))
+	t.false(validator.verify('https://acenz.com/query'))
+})
 
-tap.test('Override protocol', (t) => {
-  const validator = new Whitelister('example.com');
-  validator.allowedProtocols = ['gopher:'];
+test('Checks protocol', t => {
+	const validator = new Whitelister('example.com')
+	t.true(validator.verify('https://example.com/query'))
+	t.false(validator.verify('gopher://example.com/query'))
+})
 
-  t.equal(validator.verify('https://example.com/query'), false);
-  t.equal(validator.verify('gopher://example.com/query'), true);
-  t.end();
-});
+test('Override protocol', t => {
+	const validator = new Whitelister('example.com')
+	validator.allowedProtocols = ['gopher:']
+
+	t.false(validator.verify('https://example.com/query'))
+	t.true(validator.verify('gopher://example.com/query'))
+})
